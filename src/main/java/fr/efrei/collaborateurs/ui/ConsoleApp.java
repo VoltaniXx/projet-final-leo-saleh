@@ -1,5 +1,11 @@
 package fr.efrei.collaborateurs.ui;
 
+import java.util.List;
+import java.util.Scanner;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.efrei.collaborateurs.exception.CollaborateurDejaExistantException;
 import fr.efrei.collaborateurs.exception.CollaborateurIntrouvableException;
 import fr.efrei.collaborateurs.modele.Adresse;
@@ -8,11 +14,6 @@ import fr.efrei.collaborateurs.modele.Programmeur;
 import fr.efrei.collaborateurs.modele.Testeur;
 import fr.efrei.collaborateurs.service.CollaborateurService;
 import jakarta.persistence.PersistenceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * Seule classe qui dialogue avec l'utilisateur : ses println sont des affichages
@@ -23,9 +24,13 @@ public class ConsoleApp {
     private static final Logger logger = LoggerFactory.getLogger(ConsoleApp.class);
 
     private final CollaborateurService service;
+    private final EquipeService serviceEquipe;
     private final Scanner scanner = new Scanner(System.in);
 
     public ConsoleApp(CollaborateurService service) {
+        this.service = service;
+    }
+    public ConsoleAppEquipe(EquipeService service) {
         this.service = service;
     }
 
@@ -42,6 +47,13 @@ public class ConsoleApp {
                     case "4" -> rechercherParNom();
                     case "5" -> augmenter();
                     case "6" -> listerParLangage();
+                    case "7" -> creerEquipe();
+                    case "8" -> service.listerEquipes().forEach(System.out::println);
+                    case "9" -> ajouterCollaborateurAEquipe();
+                    case "10" -> retirerCollaborateurDuneEquipe();
+                    case "11" -> listerCollaborateursDuneEquipe();
+                    case "12" -> renommerEquipe();
+                    case "13" -> supprimerEquipe();
                     case "0" -> continuer = false;
                     default -> System.out.println("Choix inconnu.");
                 }
@@ -61,16 +73,28 @@ public class ConsoleApp {
     }
 
     private void afficherMenu() {
-        System.out.println();
+        System.out.println("===== GESTION DES COLLABORATEURS =====");
         System.out.println("1. Ajouter un programmeur");
         System.out.println("2. Ajouter un testeur");
         System.out.println("3. Salaire supérieur à ...");
         System.out.println("4. Rechercher par nom");
         System.out.println("5. Augmenter un salaire");
         System.out.println("6. Programmeurs par langage");
+        System.out.println();
+        System.out.println("===== GESTION DES EQUIPES =====");
+        System.out.println("7. Créer une équipe");
+        System.out.println("8. Lister les équipes existantes");
+        System.out.println("9. Ajouter un collaborateur à une équipe");
+        System.out.println("10. Retirer un collaborateur d'une équipe");
+        System.out.println("11. Lister les collaborateurs d'une équipe");
+        System.out.println("12. Renommer une équipe");
+        System.out.println("13. Supprimer une équipe");
         System.out.println("0. Quitter");
         System.out.print("Votre choix : ");
+
     }
+
+
 
     private void ajouterProgrammeur() {
         String identifiant = lireTexte("Identifiant");
