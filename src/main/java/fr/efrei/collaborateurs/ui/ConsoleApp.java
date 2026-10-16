@@ -3,6 +3,7 @@ package fr.efrei.collaborateurs.ui;
 import java.util.List;
 import java.util.Scanner;
 
+import fr.efrei.collaborateurs.service.EquipeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +28,9 @@ public class ConsoleApp {
     private final EquipeService serviceEquipe;
     private final Scanner scanner = new Scanner(System.in);
 
-    public ConsoleApp(CollaborateurService service) {
+    public ConsoleApp(CollaborateurService service, EquipeService serviceEquipe) {
         this.service = service;
-    }
-    public ConsoleAppEquipe(EquipeService service) {
-        this.service = service;
+        this.serviceEquipe = serviceEquipe;
     }
 
     public void lancer() {

@@ -3,6 +3,7 @@ package fr.efrei.collaborateurs.service;
 import fr.efrei.collaborateurs.exception.CollaborateurDejaExistantException;
 import fr.efrei.collaborateurs.exception.CollaborateurIntrouvableException;
 import fr.efrei.collaborateurs.modele.Collaborateur;
+import fr.efrei.collaborateurs.modele.Equipe;
 import fr.efrei.collaborateurs.modele.Programmeur;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
