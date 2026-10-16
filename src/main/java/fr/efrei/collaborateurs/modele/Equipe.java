@@ -18,11 +18,12 @@ public class Equipe
 
     protected Equipe()
     {
-
+        // exigé par JPA
     }
 
     public Equipe(String nom)
     {
+        
         setNom(nom);
     }
 

@@ -3,7 +3,6 @@ package fr.efrei.collaborateurs.ui;
 import java.util.List;
 import java.util.Scanner;
 
-import fr.efrei.collaborateurs.service.EquipeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,9 +10,11 @@ import fr.efrei.collaborateurs.exception.CollaborateurDejaExistantException;
 import fr.efrei.collaborateurs.exception.CollaborateurIntrouvableException;
 import fr.efrei.collaborateurs.modele.Adresse;
 import fr.efrei.collaborateurs.modele.Collaborateur;
+import fr.efrei.collaborateurs.modele.Equipe;
 import fr.efrei.collaborateurs.modele.Programmeur;
 import fr.efrei.collaborateurs.modele.Testeur;
 import fr.efrei.collaborateurs.service.CollaborateurService;
+import fr.efrei.collaborateurs.service.EquipeService;
 import jakarta.persistence.PersistenceException;
 
 /**
@@ -25,12 +26,12 @@ public class ConsoleApp {
     private static final Logger logger = LoggerFactory.getLogger(ConsoleApp.class);
 
     private final CollaborateurService service;
-    private final EquipeService serviceEquipe;
+    private final EquipeService equipeService;
     private final Scanner scanner = new Scanner(System.in);
 
-    public ConsoleApp(CollaborateurService service, EquipeService serviceEquipe) {
+    public ConsoleApp(CollaborateurService service, EquipeService equipeService) {
         this.service = service;
-        this.serviceEquipe = serviceEquipe;
+        this.equipeService = equipeService;
     }
 
     public void lancer() {
@@ -47,12 +48,13 @@ public class ConsoleApp {
                     case "5" -> augmenter();
                     case "6" -> listerParLangage();
                     case "7" -> creerEquipe();
-                    case "8" -> service.listerEquipes().forEach(System.out::println);
+                    case "8" -> listerEquipe();
                     case "9" -> ajouterCollaborateurAEquipe();
                     case "10" -> retirerCollaborateurDuneEquipe();
                     case "11" -> listerCollaborateursDuneEquipe();
                     case "12" -> renommerEquipe();
                     case "13" -> supprimerEquipe();
+                    case "14" -> afficherCollaborateursSansEquipe();
                     case "0" -> continuer = false;
                     default -> System.out.println("Choix inconnu.");
                 }
@@ -88,10 +90,63 @@ public class ConsoleApp {
         System.out.println("11. Lister les collaborateurs d'une équipe");
         System.out.println("12. Renommer une équipe");
         System.out.println("13. Supprimer une équipe");
+        System.out.println("14. Afficher les collaborateurs sans équipe");
         System.out.println("0. Quitter");
         System.out.print("Votre choix : ");
 
     }
+
+    private void creerEquipe() {
+        String nom = lireTexte("Nom de l'équipe");
+        equipeService.creerEquipe(nom);
+        System.out.println("Équipe enregistrée.");
+    }
+
+
+    public void listerEquipe(){
+        afficherEquipe(equipeService.listerEquipes());
+    }
+
+    
+    public void ajouterCollaborateurAEquipe(){
+        long identifiant = Long.parseLong(lireTexte("Identifiant du collaborateur"));
+        long equipeId = Long.parseLong(lireTexte("ID de l'équipe"));
+        equipeService.affecterCollaborateurAEquipe(identifiant, equipeId);
+        System.out.println("Collaborateur ajouté à l'équipe.");
+    }
+
+    public void retirerCollaborateurDuneEquipe(){
+        long identifiant = Long.parseLong(lireTexte("Identifiant du collaborateur"));
+        long equipeId = Long.parseLong(lireTexte("ID de l'équipe"));
+        equipeService.retirerCollaborateurDEquipe(identifiant, equipeId);
+        System.out.println("Collaborateur retiré de l'équipe.");
+    }
+
+    public void listerCollaborateursDuneEquipe(){
+        long equipeId = Long.parseLong(lireTexte("ID de l'équipe"));
+        List<Collaborateur> collaborateurs = equipeService.listerCollaborateursParEquipe(equipeId);
+        afficher(collaborateurs);
+    }
+
+    public void renommerEquipe(){
+        long equipeId = Long.parseLong(lireTexte("ID de l'équipe"));
+        String nouveauNom = lireTexte("Nouveau nom de l'équipe");
+        equipeService.renommerEquipe(equipeId, nouveauNom);
+        System.out.println("Équipe renommée.");
+    }
+
+    public void supprimerEquipe(){
+        long equipeId = Long.parseLong(lireTexte("ID de l'équipe"));
+        equipeService.supprimerEquipe(equipeId);
+        System.out.println("Équipe supprimée.");
+    }
+
+    public void afficherCollaborateursSansEquipe(){
+        List<Collaborateur> collaborateurs = equipeService.listerCollaborateursSansEquipe();
+        afficher(collaborateurs);
+    }
+
+
 
 
 
@@ -104,6 +159,7 @@ public class ConsoleApp {
         service.ajouter(new Programmeur(identifiant, prenom, nom, salaire, lireAdresse(), langage));
         System.out.println("Programmeur enregistré.");
     }
+
 
     private void ajouterTesteur() {
         String identifiant = lireTexte("Identifiant");
@@ -138,6 +194,13 @@ public class ConsoleApp {
     }
 
     private void afficher(List<? extends Collaborateur> liste) {
+        if (liste.isEmpty()) {
+            System.out.println("Aucun résultat.");
+        }
+        liste.forEach(System.out::println);
+    }
+
+    private void afficherEquipe(List<? extends Equipe> liste) {
         if (liste.isEmpty()) {
             System.out.println("Aucun résultat.");
         }

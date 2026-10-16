@@ -1,14 +1,15 @@
 package fr.efrei.collaborateurs.service;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.efrei.collaborateurs.modele.Collaborateur;
 import fr.efrei.collaborateurs.modele.Equipe;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Gestion des équipes, des affectations et des règles associées.
@@ -184,6 +185,24 @@ public class EquipeService {
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
             throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+        // Afficher les collaborateurs d'une équipe
+    public List<Collaborateur> listerCollaborateursParEquipe(Long equipeId) {
+        EntityManager em = this.eMFactory.createEntityManager();
+        try {
+            // Vérifier d'abord si l'équipe existe
+            Equipe equipe = em.find(Equipe.class, equipeId);
+            if (equipe == null) {
+                throw new IllegalArgumentException("Équipe introuvable.");
+            }
+
+            return em.createQuery("SELECT c FROM Collaborateur c WHERE c.equipe.id = :equipeId", Collaborateur.class)
+                    .setParameter("equipeId", equipeId)
+                    .getResultList();
         } finally {
             em.close();
         }
