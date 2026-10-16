@@ -1,6 +1,10 @@
 package fr.efrei.collaborateurs.modele;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "equipe")
@@ -29,5 +33,23 @@ public class Equipe
             throw new IllegalArgumentException("Nom d'équipe invalide !");
         }
         this.nom = nom;
+    }
+
+    public long getId()
+    {
+        return id;
+    }
+
+    public String getNom()
+    {
+        return nom;
+    }
+    
+    public void renommer(String nouveauNom){
+        if (nouveauNom == null || nouveauNom.trim().isEmpty())
+        {
+            throw new IllegalArgumentException("Nom d'équipe invalide !");
+        }
+        this.nom = nouveauNom.trim();
     }
 }

@@ -1,6 +1,15 @@
 package fr.efrei.collaborateurs.modele;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 /**
  * Une seule table "collaborateur" pour toute la hiérarchie (SINGLE_TABLE).
@@ -32,6 +41,11 @@ public abstract class Collaborateur {
     @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "adresse_id", nullable = false)
     private Adresse adresse;
+
+    @ManyToOne
+    @JoinColumn(name = "equipe_id")
+    private Equipe equipe;
+
 
     protected Collaborateur() {
         // exigé par JPA
@@ -71,6 +85,16 @@ public abstract class Collaborateur {
     public String getNom() { return nom; }
     public double getSalaire() { return salaire; }
     public Adresse getAdresse() { return adresse; }
+
+
+    public Equipe getEquipe() {
+        return this.equipe;
+    }
+
+    public void setEquipe(Equipe equipe) {
+        this.equipe = equipe;
+    }
+
 
     @Override
     public String toString() {
